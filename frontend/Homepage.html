@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Bot Cloud Computing Project</title>
+    <style type="text/css">
+        .talk_con{
+            width:800px;
+            height:500px;
+            border:5px solid #666;
+            margin:50px auto 0;
+            background:#f9f9f9;
+        }
+        .talk_show{
+            width:780px;
+            height:420px;
+            border:5px solid #666;
+            background:#f9f9f9;
+            margin:10px auto 0;
+            overflow:auto;
+        }
+        .talk_input{
+            width:580px;
+            margin:10px auto 0;
+        }
+        .whotalk{
+            width:80px;
+            height:30px;
+            float:left;
+            outline:none;
+        }
+        .talk_word{
+            width:420px;
+            height:26px;
+            padding:0px;
+            float:left;
+            margin-left:10px;
+            outline:none;
+            text-indent:10px;
+        }        
+        .talk_sub{
+            width:56px;
+            height:40px;
+            float:left;
+            margin-left:10px;
+        }
+        .atalk{
+           margin:10px; 
+        }
+        .atalk span{
+            display:inline-block;
+            background:#4DC86F;
+            border-radius:10px;
+            color:#000;
+            padding:5px 10px;
+        }
+        .btalk{
+            margin:10px;
+            text-align:right;
+        }
+        .btalk span{
+            display:inline-block;
+            background:#E7FFFF;
+            border-radius:10px;
+            color:#000;
+            padding:5px 10px;
+        }
+    </style>
+
+    <script type="text/javascript" src="lib/axios/dist/axios.standalone.js"></script>
+    <script type="text/javascript" src="lib/CryptoJS/rollups/hmac-sha256.js"></script>
+    <script type="text/javascript" src="lib/CryptoJS/rollups/sha256.js"></script>
+    <script type="text/javascript" src="lib/CryptoJS/components/hmac.js"></script>
+    <script type="text/javascript" src="lib/CryptoJS/components/enc-base64.js"></script>
+    <script type="text/javascript" src="lib/url-template/url-template.js"></script>
+    <script type="text/javascript" src="lib/apiGatewayCore/sigV4Client.js"></script>
+    <script type="text/javascript" src="lib/apiGatewayCore/apiGatewayClient.js"></script>
+    <script type="text/javascript" src="lib/apiGatewayCore/simpleHttpClient.js"></script>
+    <script type="text/javascript" src="lib/apiGatewayCore/utils.js"></script>
+    <script type="text/javascript" src="apigClient.js"></script>
+    
+    
+
+   <script type="text/javascript">
+    //      
+    var config = {
+        accessKey: "AKIAIPW76CHBAF5HQOBQ",
+        secretKey: "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"
+    };
+       var apigClient = apigClientFactory.newClient(config);
+        window.onload = function(){
+            var Words = document.getElementById("words");
+            var Who = document.getElementById("who");
+            var TalkWords = document.getElementById("talkwords");
+            var TalkSub = document.getElementById("talksub");
+            var res;
+            TalkSub.onclick = function(){
+                var params = {
+                    'Origin' : "https://hw1front.s3.amazonaws.com"
+                };
+                var body = {
+                    "messages": TalkWords.value
+                };
+
+                var additionalParams = {};
+                apigClient.chatbotPost(params, body, additionalParams)
+                   .then( function(result){
+                       //Add success callback code here.
+                       res = result["data"]["body"]
+                       console.log(res)
+                            str = '<div class="atalk"><span>' + res +'</span></div>';
+                
+                Words.innerHTML = Words.innerHTML + str;
+                Words.scrollTop = Words.scrollHeight;
+                    }).catch( function(result){
+                       //Add error callback code here.
+                      res = "Sorry, API Gateway is not responding";
+                    });
+                var str = "";
+                if(TalkWords.value == ""){
+                    alert("Not null");
+                    return;
+                }
+                str = '<div class="btalk"><span>' + TalkWords.value +'</span></div>';    
+                Words.innerHTML = Words.innerHTML + str;
+                Words.scrollTop = Words.scrollHeight;
+                TalkWords.value = '';
+                
+            }
+            
+        }
+
+
+
+    </script>
+
+</head>
+<body>
+    <div class="talk_con">
+        <div class="talk_show" id="words">
+            <div class="atalk"><span id="asay">Is there anything I can help you?</span></div>
+        </div>
+        <div class="talk_input">
+            <!--
+            -->
+            <input type="text" class="talk_word" id="talkwords">
+            <input type="button" value="send" class="talk_sub" id="talksub">
+        </div>
+    </div>
+</body>
+</html>
